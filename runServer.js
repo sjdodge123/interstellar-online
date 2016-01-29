@@ -49,7 +49,14 @@ io.on('connection', function(socket){
 	socket.on('movement', function(ship){
 		gameObjectList[ship.ID].x = ship.x;
 		gameObjectList[ship.ID].y = ship.y;
-		socket.broadcast.emit('movement',{index:ship.ID, x:ship.x,y:ship.y,angle:ship.angle});
+		socket.broadcast.emit('movement',{
+			index:ship.ID,
+			x:ship.x,
+			y:ship.y,
+			angle:ship.angle,
+			weaponID:ship.weapon.ID,
+			weaponAngle:ship.weapon.angle
+		});
 	});
 
 	socket.on('disconnect', function() {

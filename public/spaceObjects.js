@@ -82,8 +82,7 @@ class Cannon extends GameObject{
 		super(x,y,width,height,angle,color);
 		this.bulletList = [];
 		this.type = 'Cannon';
-		this.update = function (){
-			if()
+		this.update = function () {
 			this.angle = (180/Math.PI)*Math.atan2(mouseY-myShip.y,mouseX-myShip.x)-90;
 			this.draw();
 		};

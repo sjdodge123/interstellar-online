@@ -8,6 +8,8 @@ function clientConnect() {
    		socket.on('spawnMyShip', function(packet){
 			myShip = new ShipObject(400,500,10,30,0,'white',20);
 			myShip.weapon = new Cannon(400,500,5,15,0,'red');
+			myShip.weaponID = packet.weaponIndex;
+			myShip.weapon.ID = myShip.weaponID;
 			myShip.ID = packet.shipIndex;
 			gameObjectList[packet.shipIndex] = myShip;
 			gameObjectList[packet.weaponIndex] = myShip.weapon;
@@ -27,6 +29,8 @@ function clientConnect() {
 	    		gameObjectList[packet.index].x = packet.x;
 				gameObjectList[packet.index].y = packet.y;
 				gameObjectList[packet.index].angle = packet.angle;
+				console.log(packet.weaponID);
+				gameObjectList[packet.weaponID].angle = packet.weaponAngle;
 	    	}
 	  	});
 
@@ -40,11 +44,13 @@ function clientConnect() {
   					ship.weapon = new Cannon(400,500,5,15,0,'red');
 					ship.ID = objectList[i].ID;
 					ship.weaponID = objectList[i].weaponID;
-					ship.weapon.ID = ship.weaponID;
+
+					ship.weapon.ID = objectList[i].weaponID;
 					console.log('Storing ship at : ' + ship.ID);
 					gameObjectList[ship.ID] = ship;
 					console.log('Storing weapon at : ' + ship.weapon.ID);
 					gameObjectList[ship.weapon.ID] = ship.weapon;
+					console.log('setting weapon ID to '+ship.weapon.ID)
   				}
 	  		}
 
