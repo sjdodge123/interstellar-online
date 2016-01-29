@@ -1,0 +1,150 @@
+<html>
+<canvas id ="gameCanvas" width = "800" height = "600"></canvas>
+
+<script src='socket.io/socket.io.js'></script>
+<script src="collision.js"></script>
+<script src="debug.js"></script>
+<script src="drawing.js"></script>
+<script src="spaceObjects.js"></script>
+<script src="polyDraw.js"></script>
+<script src="spacePhysics.js"></script>
+<script src="client.js"></script>
+<script type="text/javascript">
+
+var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+	height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
+
+	canvas = document.getElementById('gameCanvas');
+	//canvas.width = width-50;
+	//canvas.height = height-50;
+
+var ctx,
+mouseX,
+mouseY,
+gameObjectList = [],
+myShip = null,
+cannon,
+assTard,
+socket,
+gridOn = false,
+asteroidSpawn,
+game;
+
+// **************************	MAIN    **************************
+
+window.onload = function() {
+	
+	try{
+		socket = clientConnect();
+		console.log('Connection success');
+		initOnline();		
+	} catch (e) {
+		console.log('Connection Failed');
+		initOffline();
+	}
+	ctx = canvas.getContext('2d');
+	startGame();
+}
+
+function initOffline() {
+	console.log('Playing Offline');
+	createGameObjects();
+	setupListeners();
+	asteroidSpawn = setInterval(spawnAsteroid,1000);
+}
+		function createGameObjects() {
+			myShip = new ShipObject(canvas.width/2,canvas.height/2,10,30,0,'white',20);
+			cannon = new Cannon(canvas.width/2,canvas.height/2,5,15,0,'red');
+			myShip.weapon = cannon;
+			gameObjectList.push(myShip);
+			gameObjectList.push(myShip.weapon);
+		}
+
+		function setupListeners(){
+			canvas.addEventListener("mousemove", calcMousePos, false);
+			canvas.addEventListener("click", handleClick, false);
+			window.addEventListener("keydown", handleKeys, false);
+		}
+
+		function spawnAsteroid(evt) {
+			assTard = new Asteroid(Math.random() * canvas.width, Math.random() * canvas.height,0,0,0,'white');
+			gameObjectList.push(assTard);
+		}
+
+function initOnline() {
+	setupListeners();
+}
+
+
+function startGame() {
+	var framesPerSecond = 1000/30;
+	game = setInterval(update,framesPerSecond);
+}
+		function update() {
+			clearBackground();
+			for(var i = 0; i < gameObjectList.length;i+=1){
+				if(gameObjectList[i] != null) {
+					gameObjectList[i].update();
+				}	
+			}
+		}
+
+		
+
+
+
+// **************************	Event Handlers    **************************
+function calcMousePos(evt){
+	evt.preventDefault();
+	var rect = canvas.getBoundingClientRect(),
+		root = document.documentElement;
+	mouseX = evt.pageX - rect.left - root.scrollLeft;
+	mouseY = evt.pageY - rect.top - root.scrollTop;
+}
+
+function handleClick(evt){
+	if(!debugActive){
+		console.log('fire weapon');
+		//myShip.weapon.fire(mouseX,mouseY);
+	} else {
+		debugClick(evt);
+	}
+	evt.preventDefault();
+}
+
+function handleKeys(evt){
+	
+	var moveFoward = false;
+	var moveBackward = false;
+	var turnLeft = false;
+	var turnRight = false;
+	switch(evt.keyCode) {
+	    case 65: {turnLeft = true; break;} //Left key
+        case 87: {moveFoward = true; break;} //Up key
+        case 68: {turnRight = true; break;}//Right key
+        case 83: {moveBackward = true; break;} //Down key
+        case 71: {(gridOn == false ? gridOn = true : gridOn = false);  break;}
+        case 121: {
+        	debugOverlay();
+        	evt.preventDefault();
+        	break;
+        }
+	}
+    if(moveFoward){
+    	myShip.accelY -= Math.cos((Math.PI*myShip.angle)/180) * myShip.speed; 
+    	myShip.accelX += Math.sin((Math.PI*myShip.angle)/180) * myShip.speed; 
+    }
+    if(moveBackward){
+    	myShip.accelY += Math.cos((Math.PI*myShip.angle)/180) * myShip.speed; 
+    	myShip.accelX -= Math.sin((Math.PI*myShip.angle)/180) * myShip.speed;
+    }
+    if(turnLeft){
+    	myShip.angle -= myShip.turnSpeed;
+    }
+    if(turnRight){
+    	myShip.angle += myShip.turnSpeed;
+    }
+}
+
+</script>
+</html>
