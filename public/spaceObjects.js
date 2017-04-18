@@ -20,7 +20,7 @@ class GameObject {
 			ctx.translate(this.x+this.width/2,this.y+this.height/2);
 			ctx.rotate(this.angle*Math.PI/180);
 			ctx.fillStyle = 'red';
-			ctx.fillRect(-this.width/2,-this.height/2,this.width,this.height);
+			ctx.fillRect(-this.width/2-camera.x,-this.height/2-camera.y,this.width,this.height);
 			ctx.restore();
 		};
 		this.update = function(){
@@ -44,14 +44,14 @@ class ShipObject extends GameObject {
 			ctx.translate(this.x+this.width/2,this.y+this.height/2);
 			ctx.rotate(this.angle*Math.PI/180);
 			ctx.fillStyle = this.color;
-			ctx.fillRect(-this.width/2,-this.height/2,this.width,this.height);
+			ctx.fillRect(-this.width/2-camera.x,-this.height/2-camera.y,this.width,this.height);
 			ctx.fillStyle = 'black';
-			ctx.fillRect(-this.width/2,-this.height/2 - .2,this.width/4,this.height/4);
-			ctx.fillRect(-this.width/2+this.width-2,-this.height/2 - .2,this.width/4,this.height/4);
-			ctx.fillRect(-this.width/8-this.width/8,-this.height/2 + this.height-this.height/4,this.width/2,this.height/4);
+			ctx.fillRect(-this.width/2-camera.x,-this.height/2 - .2 -2-camera.y,this.width/4,this.height/4);
+			ctx.fillRect(-this.width/2+this.width-2-camera.x,-this.height/2 - .2-camera.y,this.width/4,this.height/4);
+			ctx.fillRect(-this.width/8-this.width/8-camera.x,-this.height/2 + this.height-this.height/4-camera.y,this.width/2,this.height/4);
 			ctx.restore();
 			if(this.weapon !=  null){
-				this.weapon.draw(this.x+this.width/4,this.y+this.height/4);	
+				this.weapon.draw(this.x+this.width/4-camera.x,this.y+this.height/4-camera.y);	
 			}
 		};
 	}
@@ -84,7 +84,6 @@ class Cannon extends GameObject{
 		this.type = 'Cannon';
 		this.update = function () {
 			this.angle = (180/Math.PI)*Math.atan2(mouseY-myShip.y,mouseX-myShip.x)-90;
-			this.draw();
 		};
 		this.fire = function(x,y){
 			var v = findVelocity(); //Stored in physics module, needs to actually return {velx vely}

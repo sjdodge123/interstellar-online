@@ -12,9 +12,12 @@ var client = {};
 var gameObjectList = [];
 var maxObjects = 20000
 "use strict";
+
+console.log("Server Starting..");
+
 io.on('connection', function(socket){
 	client[socket.id] = {clientID:clientID};
-	console.log('User '+ client[socket.id].clientID + ' has joined.');
+	console.log('User '+ client[socket.id].clientID + ' has joined. From ' + socket.handshake.address);
 
 
 	var newShip = createNewShip(socket);
