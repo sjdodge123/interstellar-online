@@ -1,4 +1,6 @@
 var maxObjects = 20000,
+	serverRunning = false,
+	serverShutdownReason = "",
 	movement;
 
 function clientConnect() {
@@ -6,6 +8,7 @@ function clientConnect() {
 		var socket = io();
 		setMaxObjects();
    		socket.on('spawnMyShip', function(packet){
+   			serverRunning = true;
 			myShip = new ShipObject(400,500,10,30,0,'white',20);
 			myShip.weapon = new Cannon(400,500,5,15,0,'red');
 			myShip.weaponID = packet.weaponIndex;
@@ -29,7 +32,6 @@ function clientConnect() {
 	    		gameObjectList[packet.index].x = packet.x;
 				gameObjectList[packet.index].y = packet.y;
 				gameObjectList[packet.index].angle = packet.angle;
-				console.log(packet.weaponID);
 				gameObjectList[packet.weaponID].angle = packet.weaponAngle;
 	    	}
 	  	});
@@ -59,8 +61,12 @@ function clientConnect() {
 					count+=1;
 				}	
 			}
-			
-	  		console.log(count);
+	  	});
+
+	  	socket.on('serverShutdown', function(reason){
+	    	serverRunning = false;
+	    	serverShutdownReason = reason;
+	    	socket.disconnect();
 	  	});
 
 	  	socket.on('player has left', function(index){

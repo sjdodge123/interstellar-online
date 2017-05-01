@@ -76,6 +76,7 @@ function initOffline() {
 
 function initOnline() {
 	setupListeners();
+	//spawnAsteroid();
 }
 
 
@@ -85,11 +86,18 @@ function startGame() {
 }
 		function update() {
 			clearBackground();
-			for(var i = 0; i < gameObjectList.length;i+=1){
-				if(gameObjectList[i] != null) {
-					gameObjectList[i].update();
-				}	
+			if(serverRunning){
+				for(var i = 0; i < gameObjectList.length;i+=1){
+					if(gameObjectList[i] != null) {
+						gameObjectList[i].update();
+					}	
+				}
+			} else{
+				ctx.fillStyle = "white";
+				ctx.font="20px Georgia";
+				ctx.fillText("The server has shutdown: " + serverShutdownReason,10,50);
 			}
+			
 		}
 
 		

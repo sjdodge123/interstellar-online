@@ -6,7 +6,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var objects =  require("./public/spaceObjects.js");
-
 var clientID = 0;
 var client = {};
 var gameObjectList = [];
@@ -14,6 +13,15 @@ var maxObjects = 20000
 "use strict";
 
 console.log("Server Starting..");
+
+process.on( 'SIGINT', function() {
+	  console.log( "\nServer shutting down from (Ctrl-C)" );
+
+	  for(var socket in io.sockets.sockets){
+	  	io.sockets.sockets[socket].emit("serverShutdown","Server terminated");
+	  }
+	  process.exit();
+});
 
 io.on('connection', function(socket){
 	client[socket.id] = {clientID:clientID};
@@ -49,6 +57,8 @@ io.on('connection', function(socket){
 	socket.broadcast.emit('newShipArrvied',{shipIndex:newShip.ID,weaponIndex:newShip.weaponID});
 	clientID += 1;
 
+
+
 	socket.on('movement', function(ship){
 		gameObjectList[ship.ID].x = ship.x;
 		gameObjectList[ship.ID].y = ship.y;
@@ -70,7 +80,6 @@ io.on('connection', function(socket){
 		console.log('Cleaning up object at storage location '+client[socket.id].weaponID);
 		console.log('User '+ client[socket.id].clientID + ' disconnected.');
   	});
-	
 });
 
 function createNewShip(socket){
