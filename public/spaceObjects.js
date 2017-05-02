@@ -85,10 +85,10 @@ class Cannon extends GameObject{
 		this.update = function () {
 			this.angle = (180/Math.PI)*Math.atan2(mouseY-myShip.y,mouseX-myShip.x)-90;
 		};
-		this.fire = function(x,y){
-			var v = findVelocity(); //Stored in physics module, needs to actually return {velx vely}
-			var bullet = new Bullet(x,y,3,10,this.angle,"red",v.velX,v.velY);
-			gameObjectList.push(bullet);
+		this.fire = function(){
+			//var v = findVelocity(); //Stored in physics module, needs to actually return {velx vely}
+			var bullet = new Bullet(x,y,3,10,this.angle,"red",2,2,myShip.weapon);
+			return bullet;
 		};
 		this.draw = function(x,y){
 			ctx.save();
@@ -101,11 +101,13 @@ class Cannon extends GameObject{
 	}
 }
 class Bullet extends GameObject{
-	constructor(x,y,width,height,angle,color,velX,velY){
+	constructor(x,y,width,height,angle,color,velX,velY,ownerID){
 		super(x,y,width,height,angle,color);
 		this.velX = velX;
 		this.velY = velY;
 		this.type = 'Bullet';
+		this.ownerID = ownerID;
+		this.lifetime = 10;
 		this.draw = function (){
 			ctx.save();
 			ctx.translate(this.x+this.width/2,this.y+this.height/2);
@@ -123,5 +125,9 @@ if(exports) {
 
 	exports.createCannonObject = (function () {
 		return new Cannon(400,500,5,15,0,'red');
+	});
+
+	exports.createBulletObject = (function (x,y,angle,velx,vely,ownerID){
+		return new Bullet(x,y,3,10,angle,"blue",velx,vely,ownerID);
 	});
 }

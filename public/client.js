@@ -63,6 +63,12 @@ function clientConnect() {
 			}
 	  	});
 
+	  	socket.on('bulletFired', function(bullet){
+	  		console.log('New shot fired at ID: ' + bullet.ID);
+	  		gameObjectList[bullet.ID] = new Bullet(bullet.x,bullet.y,bullet.width,bullet.height,bullet.angle,bullet.color,bullet.velx,bullet.vely,bullet.ownerID);
+	  		//gameObjectList[bullet.ownerID].fire(dirX,dirY);
+	  	});
+
 	  	socket.on('serverShutdown', function(reason){
 	    	serverRunning = false;
 	    	serverShutdownReason = reason;
@@ -72,11 +78,16 @@ function clientConnect() {
 	  	socket.on('player has left', function(index){
 			gameObjectList[index] = null;
 	  	});
+
 	  	return socket;
 }
 
 function sendMoveUpdates(evt){
 	socket.emit('movement',myShip);
+}
+
+function fireShot(){
+	socket.emit('shotFired',myShip.ID);
 }
 
 function setMaxObjects(){

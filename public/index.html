@@ -96,6 +96,7 @@ function startGame() {
 				ctx.fillStyle = "white";
 				ctx.font="20px Georgia";
 				ctx.fillText("The server has shutdown: " + serverShutdownReason,10,50);
+				game = null;
 			}
 			
 		}
@@ -115,8 +116,8 @@ function calcMousePos(evt){
 
 function handleClick(evt){
 	if(!debugActive){
-		console.log('fire weapon');
-		//myShip.weapon.fire(mouseX,mouseY);
+		fireShot();
+		//myShip.weapon.fire();
 	} else {
 		debugClick(evt);
 	}
